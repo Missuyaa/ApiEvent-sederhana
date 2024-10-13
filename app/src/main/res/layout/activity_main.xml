@@ -7,10 +7,10 @@
     tools:context=".MainActivity">
 
     <FrameLayout
-        android:id="@+id/container"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"/> <!-- Adjust this value based on your BottomNavigationView height -->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -19,18 +19,5 @@
         android:layout_gravity="bottom"
         app:backgroundTint="@color/teal_200"
         app:menu="@menu/bottom_navigation_menu" />
-
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        app:navGraph="@navigation/nav_graph"
-        app:defaultNavHost="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

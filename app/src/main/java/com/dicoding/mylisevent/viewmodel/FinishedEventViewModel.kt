@@ -18,24 +18,35 @@ class FinishedEventViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     fun fetchFinishedEvents() {
+        _isLoading.value = true
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = ApiClient.apiService.getFinishedEvents()
                 if (response.isSuccessful) {
                     val finishedEvents = response.body()?.listEvents ?: emptyList()
                     withContext(Dispatchers.Main) {
-                        Log.d("FinishedEventViewModel", "Received finished events: $finishedEvents") // Logging data
+                        Log.d("FinishedEventViewModel", "Received ${finishedEvents.size} finished events")
                         _finishedEvents.value = finishedEvents
+                        _isLoading.value = false
+
                     }
                 } else {
                     withContext(Dispatchers.Main) {
                         _errorMessage.value = "Failed to load finished events"
+                        _isLoading.value = false
+
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     _errorMessage.value = "Error: ${e.message}"
+                    _isLoading.value = false
+
                 }
             }
         }

@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
+            .replace(R.id.fragment_container, fragment)
             .commit()
 
         Log.d("MainActivity", "Fragment ${fragment.javaClass.simpleName} loaded")

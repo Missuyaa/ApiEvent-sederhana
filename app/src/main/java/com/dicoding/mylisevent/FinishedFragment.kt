@@ -1,9 +1,11 @@
 package com.dicoding.mylisevent
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,9 +23,10 @@ class FinishedFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("FinishedFragment", "onCreateView called")
         val view = inflater.inflate(R.layout.fragment_finished, container, false)
-        recyclerView = view.findViewById(R.id.recyclerViewFinished)
-        progressBar = view.findViewById(R.id.progressBarFinished)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        progressBar = view.findViewById(R.id.progressBar)
 
         viewModel = ViewModelProvider(this)[FinishedEventViewModel::class.java]
 
@@ -31,6 +34,12 @@ class FinishedFragment : Fragment() {
         observeLiveData()
 
         return view
+
+        // Inflate a simple layout with just a TextView
+//        val view = inflater.inflate(R.layout.fragment_simple, container, false)
+//        val textView = view.findViewById<TextView>(R.id.textView)
+//        textView.text = "Ini Finished Fragment"
+//        return view
     }
 
     private fun setupRecyclerView() {

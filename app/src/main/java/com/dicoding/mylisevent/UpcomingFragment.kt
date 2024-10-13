@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +33,11 @@ class UpcomingFragment : Fragment() {
         observeLiveData()
 
         return view
+
+//        val view = inflater.inflate(R.layout.fragment_simple, container, false)
+//        val textView = view.findViewById<TextView>(R.id.textView)
+//        textView.text = "Ini Upcoming Fragment"
+//        return view
     }
 
     private fun setupRecyclerView() {

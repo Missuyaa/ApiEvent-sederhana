@@ -42,6 +42,8 @@ class EventAdapter(
     override fun getItemCount(): Int = events.size
 
     fun updateData(newEvents: List<Event>) {
+        Log.d("EventAdapter", "Updating data with ${newEvents.size} events")
+        Log.d("EventAdapter", "First event: ${newEvents.firstOrNull()?.name ?: "No events"}")
         val oldItemCount = events.size
         events = newEvents
         if (oldItemCount == 0) {
