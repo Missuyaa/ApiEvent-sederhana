@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/upcomingFragment">
+
+    <fragment
+        android:id="@+id/upcomingFragment"
+        android:name="com.dicoding.mylisevent.UpcomingFragment"
+        tools:layout="@layout/fragment_upcoming" />
+
+    <fragment
+        android:id="@+id/eventDetailFragment"
+        android:name="com.dicoding.mylisevent.EventDetailFragment"
+        tools:layout="@layout/fragment_event_detail" />
+</navigation>
