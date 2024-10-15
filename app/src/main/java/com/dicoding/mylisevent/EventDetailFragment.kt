@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,6 +26,7 @@ class EventDetailFragment : Fragment() {
 
     private lateinit var eventId: String
     private val viewModel: EventDetailViewModel by viewModels()
+    private lateinit var progressBar: ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,9 +48,15 @@ class EventDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Menghubungkan ProgressBar dari layout
+        progressBar = view.findViewById(R.id.progressBar)
+
+        // Tampilkan ProgressBar saat memulai mengambil data
+        progressBar.visibility = View.VISIBLE
 
         viewModel.eventDetail.observe(viewLifecycleOwner) { eventDetails ->
             Log.d("EventDetailFragment", "Event details received: $eventDetails")
+            progressBar.visibility = View.GONE
 
             view.findViewById<TextView>(R.id.name_event).text = eventDetails.name
             view.findViewById<TextView>(R.id.owner_event).text = eventDetails.ownerName
@@ -72,6 +80,7 @@ class EventDetailFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            progressBar.visibility = View.GONE
             view.findViewById<TextView>(R.id.description_event).text = errorMessage
         }
 
