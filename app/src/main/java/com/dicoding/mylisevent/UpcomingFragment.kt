@@ -44,6 +44,9 @@ class UpcomingFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = EventAdapter(emptyList()) { event ->
             // Implementasi ketika event diklik
+            Log.d("UpcomingFragment", "Event clicked: ${event.id}")
+
+            (activity as? MainActivity)?.loadEventDetail(event.id.toString())
             Log.d("UpcomingFragment", "Event clicked: ${event.name}")
         }
     }

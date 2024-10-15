@@ -36,4 +36,19 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("MainActivity", "Fragment ${fragment.javaClass.simpleName} loaded")
     }
+
+    fun loadEventDetail(eventId: String) {
+        Log.d("MainActivity", "Loading event detail for ID: $eventId")
+
+        val eventDetailFragment = EventDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString("EVENT_ID", eventId)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, eventDetailFragment)
+            .addToBackStack(null)
+            .commit()
+    }
 }

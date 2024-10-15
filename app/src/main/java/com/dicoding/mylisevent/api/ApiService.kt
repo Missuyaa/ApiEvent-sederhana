@@ -1,5 +1,6 @@
 package com.dicoding.mylisevent.api
 
+import com.dicoding.mylisevent.EventDetailResponse
 import com.dicoding.mylisevent.EventResponse
 import com.dicoding.mylisevent.model.ApiResponse
 import com.dicoding.mylisevent.model.Event
@@ -17,7 +18,7 @@ interface ApiService {
     suspend fun getFinishedEvents(): Response<ApiResponse>
 
     @GET("events/{id}")
-    suspend fun getEventDetails(@Path("id") id: String): Event
+    suspend fun getEventDetails(@Path("id") id: String): Response<EventDetailResponse>
 }
 
 

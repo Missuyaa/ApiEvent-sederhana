@@ -46,6 +46,7 @@ class FinishedFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = EventAdapter(emptyList()) { event ->
             // Implementasi ketika event diklik
+            (activity as? MainActivity)?.loadEventDetail(event.id.toString())
         }
     }
 
