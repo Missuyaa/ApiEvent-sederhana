@@ -16,18 +16,17 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.dicoding.mylisevent.api.ApiClient
+import com.dicoding.mylisevent.model.FavoriteEvent
 import com.dicoding.mylisevent.viewmodel.EventDetailViewModel
-import kotlinx.coroutines.launch
+import com.dicoding.mylisevent.viewmodel.FavoriteEventViewModel
 
 class EventDetailFragment : Fragment() {
 
     private lateinit var eventId: String
     private val viewModel: EventDetailViewModel by viewModels()
+    private val favoriteViewModel: FavoriteEventViewModel by viewModels()
     private lateinit var progressBar: ProgressBar
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,34 +47,70 @@ class EventDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Menghubungkan ProgressBar dari layout
         progressBar = view.findViewById(R.id.progressBar)
+        val favoriteButton = view.findViewById<ImageView>(R.id.favoriteButton)
+        val registerButton = view.findViewById<Button>(R.id.button_register)
 
-        // Tampilkan ProgressBar saat memulai mengambil data
         progressBar.visibility = View.VISIBLE
 
+        // Observasi detail event
         viewModel.eventDetail.observe(viewLifecycleOwner) { eventDetails ->
-            Log.d("EventDetailFragment", "Event details received: $eventDetails")
             progressBar.visibility = View.GONE
+            if (eventDetails != null) {
+                view.findViewById<TextView>(R.id.name_event).text = eventDetails.name
+                view.findViewById<TextView>(R.id.owner_event).text = eventDetails.ownerName
+                view.findViewById<TextView>(R.id.time_event).text = eventDetails.beginTime
+                view.findViewById<TextView>(R.id.quota_event).text =
+                    "${eventDetails.quota - eventDetails.registrants} spots left"
 
-            view.findViewById<TextView>(R.id.name_event).text = eventDetails.name
-            view.findViewById<TextView>(R.id.owner_event).text = eventDetails.ownerName
-            view.findViewById<TextView>(R.id.time_event).text = eventDetails.beginTime
-            view.findViewById<TextView>(R.id.quota_event).text =
-                "${eventDetails.quota - eventDetails.registrants} spots left"
+                val processedDescription = removeImageTags(eventDetails.description)
+                val descriptionSpanned = fromHtml(processedDescription)
+                view.findViewById<TextView>(R.id.description_event).text = descriptionSpanned
 
-            val processedDescription = removeImageTags(eventDetails.description)
-            val descriptionSpanned = fromHtml(processedDescription)
-            view.findViewById<TextView>(R.id.description_event).text = descriptionSpanned
+                Glide.with(requireContext()).load(eventDetails.imageLogo)
+                    .into(view.findViewById<ImageView>(R.id.image_logo))
 
-            Glide.with(requireContext()).load(eventDetails.imageLogo)
-                .into(view.findViewById<ImageView>(R.id.image_logo))
+                // Atur warna sesuai mode gelap/terang
+                updateThemeColors(view, registerButton)
 
-            val registerButton = view.findViewById<Button>(R.id.button_register)
-            registerButton.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(eventDetails.link)
-                startActivity(intent)
+                registerButton.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(eventDetails.link)
+                    startActivity(intent)
+                }
+
+                // Cek status favorit
+                favoriteViewModel.isFavorite(eventId.toInt()).observe(viewLifecycleOwner) { favoriteEvent ->
+                    val isFavorite = favoriteEvent != null
+                    favoriteButton.setImageResource(
+                        if (isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_border
+                    )
+
+                    // Aksi saat tombol favorit ditekan
+                    favoriteButton.setOnClickListener {
+                        if (isFavorite) {
+                            favoriteViewModel.removeFavorite(eventId.toInt())
+                        } else {
+                            val eventToAdd = FavoriteEvent(
+                                id = eventDetails.id,
+                                name = eventDetails.name,
+                                description = eventDetails.description,
+                                imageLogo = eventDetails.imageLogo,
+                                category = eventDetails.category,
+                                ownerName = eventDetails.ownerName,
+                                cityName = eventDetails.cityName,
+                                quota = eventDetails.quota,
+                                registrants = eventDetails.registrants,
+                                beginTime = eventDetails.beginTime,
+                                endTime = eventDetails.endTime,
+                                link = eventDetails.link
+                            )
+                            favoriteViewModel.addFavorite(eventToAdd)
+                        }
+                    }
+                }
+            } else {
+                view.findViewById<TextView>(R.id.description_event).text = "Event tidak ditemukan."
             }
         }
 
@@ -87,17 +122,17 @@ class EventDetailFragment : Fragment() {
         viewModel.fetchEventDetails(eventId)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(eventId: String) = EventDetailFragment().apply {
-            arguments = Bundle().apply {
-                putString("EVENT_ID", eventId)
-            }
+    private fun updateThemeColors(view: View, registerButton: Button) {
+        if (isDarkModeEnabled()) {
+            view.findViewById<TextView>(R.id.name_event).setTextColor(resources.getColor(R.color.white, null))
+            registerButton.setBackgroundColor(resources.getColor(R.color.black, null))
+        } else {
+            view.findViewById<TextView>(R.id.name_event).setTextColor(resources.getColor(R.color.black, null))
+            registerButton.setBackgroundColor(resources.getColor(R.color.teal_200, null))
         }
     }
 
     private fun removeImageTags(description: String): String {
-        // Remove all img tags from the description
         return description.replace("<img[^>]*>".toRegex(), "")
     }
 
@@ -107,6 +142,20 @@ class EventDetailFragment : Fragment() {
         } else {
             @Suppress("DEPRECATION")
             Html.fromHtml(html)
+        }
+    }
+
+    private fun isDarkModeEnabled(): Boolean {
+        val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(eventId: String) = EventDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString("EVENT_ID", eventId)
+            }
         }
     }
 }

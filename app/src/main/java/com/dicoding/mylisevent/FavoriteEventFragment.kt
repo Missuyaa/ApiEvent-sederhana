@@ -1,9 +1,12 @@
 package com.dicoding.mylisevent
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +17,8 @@ class FavoriteEventFragment : Fragment() {
 
     private val favoriteEventViewModel: FavoriteEventViewModel by viewModels()
     private lateinit var favoriteAdapter: FavoriteEventAdapter
+    private var progressBar: ProgressBar? = null
+    private var recyclerView: RecyclerView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,9 +31,13 @@ class FavoriteEventFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.favoriteRecyclerView)
+        progressBar = view.findViewById(R.id.progressBar)
+        recyclerView = view.findViewById(R.id.favoriteRecyclerView)
+
+        progressBar?.visibility = View.VISIBLE
+        recyclerView?.visibility = View.GONE
+
         favoriteAdapter = FavoriteEventAdapter { event ->
-            // Navigasi ke halaman detail event saat item diklik
             val fragment = EventDetailFragment.newInstance(event.id.toString())
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -36,16 +45,25 @@ class FavoriteEventFragment : Fragment() {
                 .commit()
         }
 
-
-        recyclerView.apply {
+        recyclerView?.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = favoriteAdapter
         }
 
-        // Observe data favorites
+        // Observe data LiveData untuk favorit
         favoriteEventViewModel.allFavorites.observe(viewLifecycleOwner) { favoriteEvents ->
-            favoriteAdapter.submitList(favoriteEvents)
+            Handler(Looper.getMainLooper()).postDelayed({
+                progressBar?.visibility = View.GONE
+                recyclerView?.visibility = View.VISIBLE
+                favoriteAdapter.submitList(favoriteEvents)
+            }, 2000) // 2 detik delay
         }
+    }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressBar = null
+        recyclerView = null
     }
 }

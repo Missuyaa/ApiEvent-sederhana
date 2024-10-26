@@ -10,11 +10,24 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoriteRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
     <TextView
+        android:id="@+id/emptyTextView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:text="No favorite events"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_gravity="center"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="visible"/>
+
 
 </LinearLayout>

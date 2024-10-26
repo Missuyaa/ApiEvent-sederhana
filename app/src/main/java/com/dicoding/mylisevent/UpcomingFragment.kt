@@ -1,11 +1,11 @@
 package com.dicoding.mylisevent
 
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -33,38 +33,41 @@ class UpcomingFragment : Fragment() {
         observeLiveData()
 
         return view
-
-//        val view = inflater.inflate(R.layout.fragment_simple, container, false)
-//        val textView = view.findViewById<TextView>(R.id.textView)
-//        textView.text = "Ini Upcoming Fragment"
-//        return view
     }
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = EventAdapter(emptyList()) { event ->
-            // Implementasi ketika event diklik
-            Log.d("UpcomingFragment", "Event clicked: ${event.id}")
-
             (activity as? MainActivity)?.loadEventDetail(event.id.toString())
-            Log.d("UpcomingFragment", "Event clicked: ${event.name}")
         }
     }
 
     private fun observeLiveData() {
-        // Observe LiveData untuk event yang akan datang
-        viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
-            (recyclerView.adapter as EventAdapter).updateData(events)
-            Log.d("UpcomingFragment", "Displaying ${events.size} upcoming events")
-        }
+        // Menggunakan viewLifecycleOwnerLiveData untuk menambahkan observer secara aman
+        viewLifecycleOwnerLiveData.observe(this) { viewLifecycleOwner ->
+            if (viewLifecycleOwner != null) {
+                progressBar.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
 
-        // Observe LiveData untuk pesan error
-        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            Log.e("UpcomingFragment", "Error: $message")
-        }
+                // Tambahkan delay 2 detik untuk simulasi loading
+                Handler(Looper.getMainLooper()).postDelayed({
+                    viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
+                        progressBar.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                        (recyclerView.adapter as EventAdapter).updateData(events)
+                        if (events.isEmpty()) {
+                            Toast.makeText(context, "No upcoming events", Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
-        // Fetch data event yang akan datang
-        viewModel.fetchUpcomingEvents()
+                    viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+
+                    viewModel.fetchUpcomingEvents()
+                }, 2000) // 2 detik delay
+            }
+        }
     }
 }
