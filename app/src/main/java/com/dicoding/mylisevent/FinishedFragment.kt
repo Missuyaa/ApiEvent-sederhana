@@ -1,11 +1,12 @@
 package com.dicoding.mylisevent
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -34,12 +35,6 @@ class FinishedFragment : Fragment() {
         observeLiveData()
 
         return view
-
-        // Inflate a simple layout with just a TextView
-//        val view = inflater.inflate(R.layout.fragment_simple, container, false)
-//        val textView = view.findViewById<TextView>(R.id.textView)
-//        textView.text = "Ini Finished Fragment"
-//        return view
     }
 
     private fun setupRecyclerView() {
@@ -51,21 +46,28 @@ class FinishedFragment : Fragment() {
     }
 
     private fun observeLiveData() {
-        // Observe LiveData untuk event yang sudah selesai
+        progressBar.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+
         viewModel.finishedEvents.observe(viewLifecycleOwner) { events ->
-            (recyclerView.adapter as EventAdapter).updateData(events)
-            // Pastikan data event diterima
-            if (events.isEmpty()) {
-                Toast.makeText(context, "No finished events", Toast.LENGTH_SHORT).show()
-            }
+            Handler(Looper.getMainLooper()).postDelayed({
+                recyclerView.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
+                (recyclerView.adapter as EventAdapter).updateData(events)
+                if (events.isEmpty()) {
+                    Toast.makeText(context, "No upcoming events", Toast.LENGTH_SHORT).show()
+                }
+            }, 2000) // 2 detik delay
         }
 
-        // Observe LiveData untuk pesan error
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        }
+            Handler(Looper.getMainLooper()).postDelayed({
+                recyclerView.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
 
-        // Fetch data event yang sudah selesai
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            }, 2000) // 2 detik delay
+        }
         viewModel.fetchFinishedEvents()
     }
 }

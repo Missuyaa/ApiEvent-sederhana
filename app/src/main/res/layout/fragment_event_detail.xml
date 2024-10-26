@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -7,15 +7,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:clipChildren="false">
 
-        <ImageView
-            android:id="@+id/image_logo"
+        <!-- FrameLayout for stacking ImageView and ImageButton -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:contentDescription="@null" />
+            android:layout_height="220dp"
+            android:clipChildren="false">
+
+            <ImageView
+                android:id="@+id/image_logo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop" />
+
+            <ImageButton
+                android:id="@+id/favoriteButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="-20dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/circle_background"
+                android:contentDescription="@string/favorite"
+                android:elevation="100000dp"
+                android:src="@drawable/ic_favorite_border" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/name_event"
@@ -24,7 +43,7 @@
             android:textSize="24sp"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="26dp" />
 
         <TextView
             android:id="@+id/owner_event"
@@ -54,14 +73,15 @@
             android:textSize="16sp"
             android:layout_marginTop="8dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_register"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Register"
+            android:background="@color/teal_200"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -69,6 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone" />
+
     </LinearLayout>
 
 </ScrollView>

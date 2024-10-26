@@ -1,16 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/upcomingFragment">
 
     <fragment
         android:id="@+id/upcomingFragment"
         android:name="com.dicoding.mylisevent.UpcomingFragment"
-        tools:layout="@layout/fragment_upcoming" />
+        android:label="Upcoming Events">
+        <action
+            android:id="@+id/action_upcoming_to_eventDetail"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/finishedFragment"
+        android:name="com.dicoding.mylisevent.FinishedFragment"
+        android:label="Finished Events">
+        <action
+            android:id="@+id/action_finished_to_eventDetail"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoriteEventFragment"
+        android:name="com.dicoding.mylisevent.FavoriteEventFragment"
+        android:label="Favorite Events">
+        <action
+            android:id="@+id/action_favorite_to_eventDetail"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.dicoding.mylisevent.SettingsFragment"
+        android:label="Settings" />
 
     <fragment
         android:id="@+id/eventDetailFragment"
         android:name="com.dicoding.mylisevent.EventDetailFragment"
-        tools:layout="@layout/fragment_event_detail" />
+        android:label="Event Detail">
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
